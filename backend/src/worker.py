@@ -3,7 +3,7 @@ import traceback,redis
 from sqlalchemy import select
 from src.config.settings import REDIS_URL
 from src.config.database import Session
-from src.models import SimulationRun,CapacityScenario,ServiceProfile
+from src.models import SimulationRun,CapacityScenario,ServiceProfile,ArrivalDataset
 from src.services.analysis import analyze
 client=redis.Redis.from_url(REDIS_URL)
 heartbeat=Path("/artifacts/worker-heartbeat")
@@ -14,7 +14,8 @@ def execute(id):
   run.status="running";db.commit()
   try:
    scenario=db.get(CapacityScenario,run.scenario_id);profile=db.get(ServiceProfile,scenario.profile_id)
-   run.result=analyze(profile,scenario);run.status="completed"
+   dataset=db.get(ArrivalDataset,profile.dataset_id)
+   run.result=analyze(profile,scenario,dataset.rows if dataset else None);run.status="completed"
   except Exception as error:run.error=str(error);run.status="failed";traceback.print_exc()
   db.commit()
 with Session() as db:

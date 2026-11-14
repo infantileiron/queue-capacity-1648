@@ -1,4 +1,4 @@
-from pydantic import BaseModel,Field
+from pydantic import BaseModel,Field,field_validator
 class ScenarioInput(BaseModel):
  name:str=Field(min_length=2,max_length=120)
  profile_id:str
@@ -8,4 +8,10 @@ class ScenarioInput(BaseModel):
  duration_minutes:int=Field(default=480,ge=60,le=1440)
  warmup_minutes:int=Field(default=120,ge=0,le=1440)
  replications:int=Field(default=30,ge=5,le=100)
+ resamples:int=Field(default=0,ge=0,le=100)
  seed:int=Field(default=2206,ge=0,le=2147483647)
+ @field_validator("resamples")
+ @classmethod
+ def resamples_valid(cls,value):
+  if value==1:raise ValueError("抽样组数须为0（关闭）或2—100组")
+  return value

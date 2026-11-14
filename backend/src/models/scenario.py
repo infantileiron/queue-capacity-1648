@@ -12,5 +12,6 @@ class CapacityScenario(Base):
  duration_minutes:Mapped[int]=mapped_column(Integer)
  warmup_minutes:Mapped[int]=mapped_column(Integer)
  replications:Mapped[int]=mapped_column(Integer)
+ resamples:Mapped[int]=mapped_column(Integer,default=0)
  seed:Mapped[int]=mapped_column(Integer)
  created_at:Mapped[str]=mapped_column(String(64))
